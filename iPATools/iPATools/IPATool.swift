@@ -10,23 +10,135 @@ import Foundation
 
 /// IPATool解析命令行
 class IPATool {
-    let rootPath:String = "/Applications/MAMP/htdocs"
-    let server:String = "http://10.33.22.80"
-    let githubPath:String = "https://raw.githubusercontent.com/josercc/iPATool-Plist"
-    let identifier:String = "com.globalegrow.gearbest"
-    let port:String = "8888"
+    
+    private struct IPAToolName {
+        static var rootPath:String = "rootPath"
+        static var server:String = "server"
+        static var githubRepo:String = "githubRepo"
+        static var identifier:String = "identifier"
+        static var port:String = "port"
+        static var githubUser:String = "githubUser"
+    }
+    
+    var rootPath:String = "/Applications/MAMP/htdocs"
+    var server:String = "http://0.0.0.0"
+    var githubRoot:String = "https://raw.githubusercontent.com/"
+    var githubRepo:String = "iPAToolPlist"
+    var identifier:String = "com.xxxxxxxxxx.identifier"
+    var port:String = "8888"
+    var githubUser:String = ""
     /// 是否可以解析命令
     ///
     /// - Returns: 如果是YES代表可以解析 如果是NO代表不可以解析
     func canParseCommand() -> Bool {
-        guard CommandLine.argc == 2 else {
+        guard CommandLine.argc >= 2 else {
+            return false
+        }
+        /// 判断命令是否被程序支持
+        guard ["rootPath","server","githubRepo","identifier","port","githubUser","public","--help","--configuration"].contains(CommandLine.arguments[1]) else {
             return false
         }
         
-        guard canParsePublic() else {
-            return false
+        getLocalValue()
+        
+        if canParsePublic() {
+            return true
         }
         
+        if checkOtherCommand(command: "rootPath", key: IPAToolName.rootPath) {
+            return true
+        }
+        
+        if checkOtherCommand(command: "server", key: IPAToolName.server) {
+            return true
+        }
+        
+        if checkOtherCommand(command: "githubRepo", key: IPAToolName.githubRepo) {
+            return true
+        }
+        
+        if checkOtherCommand(command: "identifier", key: IPAToolName.identifier) {
+            return true
+        }
+        
+        if checkOtherCommand(command: "port", key: IPAToolName.port) {
+            return true
+        }
+        
+        if checkOtherCommand(command: "githubUser", key: IPAToolName.githubUser) {
+            return true
+        }
+        
+        if checkHelp() {
+            return true
+        }
+        
+        if checkConfigurationValue() {
+            return true
+        }
+        
+        return false
+    }
+    
+    func getLocalValue() {
+        rootPath = setValue(key: IPAToolName.rootPath, defaultValue: rootPath)
+        server = setValue(key: IPAToolName.server, defaultValue: server)
+        githubRepo = setValue(key: IPAToolName.githubRepo, defaultValue: githubRepo)
+        identifier = setValue(key: IPAToolName.identifier, defaultValue: identifier)
+        port = setValue(key: IPAToolName.port, defaultValue: port)
+        githubUser = setValue(key: IPAToolName.githubUser, defaultValue: githubUser)
+    }
+    
+    func checkConfigurationValue() -> Bool {
+        guard CommandLine.arguments[1] == "--configuration" else {
+            return false
+        }
+        let log = "rootPath:\(rootPath)\n"
+        + "server:\(server)\n"
+        + "githubRepo:\(githubRepo)\n"
+        + "identifier:\(identifier)\n"
+        + "port:\(port)\n"
+        + "githubUser:\(githubUser)\n"
+        print(log)
+        return true
+    }
+    
+    func checkOtherCommand(command:String, key:String) -> Bool {
+        guard CommandLine.argc == 3 else {
+            return false
+        }
+        guard CommandLine.arguments[1] == command  else {
+            return false
+        }
+        UserDefaults.standard.set(CommandLine.arguments[2], forKey: key)
+        return true
+    }
+    
+    func setValue(key:String, defaultValue:String) -> String {
+        guard let value = UserDefaults.standard.object(forKey: key) as? String else {
+            return defaultValue
+        }
+        guard value.characters.count > 0 else {
+            return defaultValue
+        }
+        return value
+    }
+    
+    func checkHelp() -> Bool {
+        guard CommandLine.arguments[1] == "--help" else {
+            return false
+        }
+        let printInfo = "iPATools命令请使用下列命令:\n"
+            + "public 发布本地的IPA的安装文件到指定目录并生成对应的index.html安装文件\n"
+            + "rootPath 包含IPA文件和Plist文件的主目录 默认为/Applications/MAMP/htdocs\n"
+            + "server 设置服务器的地址默认为http://0.0.0.0\n"
+            + "githubUser * 设置github 托管Plist库用户名或者组织名称默认不存在\n"
+            + "githubRepo 设置github 托管Plist库的库名称默认为iPAToolPlist默认为iPAToolPlist\n"
+            + "identifier 设置APP的标识符默认为com.xxxxxxxxxx.identifier 不设置不影响安装会在安装之后覆盖之前的\n"
+            + "port 设置服务器的端口号 默认为8888\n"
+            + "--help 获取帮助\n"
+            + "--configuration 查看当前的配置\n"
+        print(printInfo)
         return true
     }
     
@@ -37,7 +149,25 @@ class IPATool {
         guard CommandLine.arguments[1] == "public" else {
             return false
         }
+        guard checkConfiguration() else {
+            print("请通过iPATools githubUser设置存在github库的用户名称或者组织名称")
+            return false
+        }
         publicIpa()
+        return true
+    }
+    
+    /// 检查配置是否可以发布
+    ///
+    /// - Returns: 如果是true代表可以发布 如果是false代表不可以发布
+    func checkConfiguration() -> Bool{
+        guard let user = UserDefaults.standard.object(forKey: IPAToolName.githubUser) as? String else {
+            return false
+        }
+        guard user.characters.count > 0 else {
+            return false
+        }
+        githubUser = user
         return true
     }
     
@@ -65,7 +195,7 @@ class IPATool {
                 content = content.replacingOccurrences(of: dic.key, with: dic.value)
             }
             
-            let file = "\(rootPath)/iPAToolPlist/plist/\(info.ipaName.replacingOccurrences(of: ".ipa", with: ".plist"))"
+            let file = "\(rootPath)/\(githubRepo)/plist/\(info.ipaName.replacingOccurrences(of: ".ipa", with: ".plist"))"
             
             try? content.write(toFile: file, atomically: true, encoding: String.Encoding.utf8)
             
@@ -74,7 +204,7 @@ class IPATool {
                 envermentName = "正式环境"
             }
             
-            let item = "<h1>\(info.name)_\(envermentName)_\(info.version)_\(info.build))</h1><a href=\'itms-services://?action=download-manifest&url=\(githubPath)/master/plist/\(info.ipaName.replacingOccurrences(of: ".ipa", with: ".plist"))'><img src=\"./install.png\" alt=\"立即安装\" ></a>"
+            let item = "<h1>\(info.name)_\(envermentName)_\(info.version)_\(info.time)</h1><a href=\'itms-services://?action=download-manifest&url=\(githubRoot)\(githubUser)/\(githubRepo)/master/plist/\(info.ipaName.replacingOccurrences(of: ".ipa", with: ".plist"))'><img src=\"./install.png\" alt=\"立即安装\" ></a>"
             body += item
             
         }
@@ -132,7 +262,7 @@ class IPATool {
     func buildTime(time:Int) -> String? {
         let date = Date(timeIntervalSince1970: TimeInterval(time))
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy年MM月dd天HH时mm分ss秒"
+        formatter.dateFormat = "yyyy年MM月dd日HH时mm分ss秒"
         return formatter.string(from: date)
     }
 }

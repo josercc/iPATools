@@ -10,6 +10,6 @@ import Foundation
 
 let tool = IPATool()
 if !tool.canParseCommand() {
-    print("请输入ipaTools --help查询命令！")
+    print("更多信息请输入 iPATools --help")
 }
 
