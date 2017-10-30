@@ -204,7 +204,7 @@ class IPATool {
                 envermentName = "正式环境"
             }
             
-            let item = "<h1>\(info.name)_\(envermentName)_\(info.version)_\(info.time)</h1><a href=\'itms-services://?action=download-manifest&url=\(githubRoot)\(githubUser)/\(githubRepo)/master/plist/\(info.ipaName.replacingOccurrences(of: ".ipa", with: ".plist"))'><img src=\"./install.png\" alt=\"立即安装\" ></a>"
+            let item = "<h1>\(info.name)_\(envermentName)_\(info.version)_\(info.time)(\(info.build))</h1><a href=\'itms-services://?action=download-manifest&url=\(githubRoot)\(githubUser)/\(githubRepo)/master/plist/\(info.ipaName.replacingOccurrences(of: ".ipa", with: ".plist"))'><img src=\"./install.png\" alt=\"立即安装\" ></a>"
             body += item
             
         }
@@ -274,4 +274,5 @@ struct IPAInfo {
     var build:Int = 0
     var ipaName:String = ""
     var time:String = ""
+    var lastSVNVersion:Int = 0
 }
