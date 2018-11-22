@@ -16,16 +16,16 @@ class IPATool {
         static var server:String = "server"
         static var githubRepo:String = "githubRepo"
         static var identifier:String = "identifier"
-        static var port:String = "port"
+//        static var port:String = "port"
         static var githubUser:String = "githubUser"
     }
     
     var rootPath:String = "/Applications/MAMP/htdocs"
-    var server:String = "http://0.0.0.0"
+    var server:String = "http://0.0.0.0:8888/"
     var githubRoot:String = "https://raw.githubusercontent.com/"
     var githubRepo:String = "iPAToolPlist"
     var identifier:String = "com.xxxxxxxxxx.identifier"
-    var port:String = "8888"
+//    var port:String = "8888"
     var githubUser:String = ""
     /// 是否可以解析命令
     ///
@@ -35,7 +35,7 @@ class IPATool {
             return false
         }
         /// 判断命令是否被程序支持
-        guard ["rootPath","server","githubRepo","identifier","port","githubUser","public","--help","--configuration"].contains(CommandLine.arguments[1]) else {
+        guard ["rootPath","server","githubRepo","identifier","githubUser","public","--help","--configuration"].contains(CommandLine.arguments[1]) else {
             return false
         }
         
@@ -61,10 +61,6 @@ class IPATool {
             return true
         }
         
-        if checkOtherCommand(command: "port", key: IPAToolName.port) {
-            return true
-        }
-        
         if checkOtherCommand(command: "githubUser", key: IPAToolName.githubUser) {
             return true
         }
@@ -85,7 +81,6 @@ class IPATool {
         server = setValue(key: IPAToolName.server, defaultValue: server)
         githubRepo = setValue(key: IPAToolName.githubRepo, defaultValue: githubRepo)
         identifier = setValue(key: IPAToolName.identifier, defaultValue: identifier)
-        port = setValue(key: IPAToolName.port, defaultValue: port)
         githubUser = setValue(key: IPAToolName.githubUser, defaultValue: githubUser)
     }
     
@@ -97,7 +92,6 @@ class IPATool {
         + "server:\(server)\n"
         + "githubRepo:\(githubRepo)\n"
         + "identifier:\(identifier)\n"
-        + "port:\(port)\n"
         + "githubUser:\(githubUser)\n"
         print(log)
         return true
@@ -118,7 +112,7 @@ class IPATool {
         guard let value = UserDefaults.standard.object(forKey: key) as? String else {
             return defaultValue
         }
-        guard value.characters.count > 0 else {
+        guard value.count > 0 else {
             return defaultValue
         }
         return value
@@ -131,11 +125,10 @@ class IPATool {
         let printInfo = "iPATools命令请使用下列命令:\n"
             + "public 发布本地的IPA的安装文件到指定目录并生成对应的index.html安装文件\n"
             + "rootPath 包含IPA文件和Plist文件的主目录 默认为/Applications/MAMP/htdocs\n"
-            + "server 设置服务器的地址默认为http://0.0.0.0\n"
+            + "server 设置服务器的地址默认为http://0.0.0.0:8888/\n"
             + "githubUser * 设置github 托管Plist库用户名或者组织名称默认不存在\n"
             + "githubRepo 设置github 托管Plist库的库名称默认为iPAToolPlist默认为iPAToolPlist\n"
             + "identifier 设置APP的标识符默认为com.xxxxxxxxxx.identifier 不设置不影响安装会在安装之后覆盖之前的\n"
-            + "port 设置服务器的端口号 默认为8888\n"
             + "--help 获取帮助\n"
             + "--configuration 查看当前的配置\n"
         print(printInfo)
@@ -164,7 +157,7 @@ class IPATool {
         guard let user = UserDefaults.standard.object(forKey: IPAToolName.githubUser) as? String else {
             return false
         }
-        guard user.characters.count > 0 else {
+        guard user.count > 0 else {
             return false
         }
         githubUser = user
@@ -183,9 +176,9 @@ class IPATool {
                 continue
             }
             let replace:[String:String] = [
-                "{ipa-url}":"\(server):\(port)/ipa/\(info.ipaName)",
-                "{display-image}":"\(server):\(port)/57x57.png",
-                "{full-size-image}":"\(server):\(port)/512x512.png",
+                "{ipa-url}":"\(server)ipa/\(info.ipaName)",
+                "{display-image}":"\(server)57x57.png",
+                "{full-size-image}":"\(server)512x512.png",
                 "{bundle-version}":"\(info.version)",
                 "{title}":"\(info.name)",
                 "{bundle-identifier}":identifier,
