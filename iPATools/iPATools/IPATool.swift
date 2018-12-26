@@ -196,8 +196,11 @@ class IPATool {
             if info.enverment == "Release" {
                 envermentName = "正式环境"
             }
-            
-            let item = "<h1>\(info.name)_\(envermentName)_\(info.version)_\(info.time)</h1><a href=\'itms-services://?action=download-manifest&url=\(githubRoot)\(githubUser)/\(githubRepo)/master/plist/\(info.ipaName.replacingOccurrences(of: ".ipa", with: ".plist"))'><img src=\"./install.png\" alt=\"立即安装\" ></a>"
+            var name = "\(info.name)_\(envermentName)_\(info.version)_\(info.time)"
+            if let branch = info.branch {
+                name = "\(name)(\(branch))"
+            }
+            let item = "<h1>\(name)</h1><a href=\'itms-services://?action=download-manifest&url=\(githubRoot)\(githubUser)/\(githubRepo)/master/plist/\(info.ipaName.replacingOccurrences(of: ".ipa", with: ".plist"))'><img src=\"./install.png\" alt=\"立即安装\" ></a>"
             body += item
             
         }
@@ -213,7 +216,7 @@ class IPATool {
         guard let contents = try? FileManager.default.contentsOfDirectory(atPath: path) else {
             return list
         }
-        for content in contents {
+        for var content in contents {
             let paths = content.components(separatedBy: ".")
             guard let laste = paths.last else {
                 continue
@@ -221,11 +224,22 @@ class IPATool {
             guard laste == "ipa" else {
                 continue
             }
+            let start = content.range(of: "[")
+            let end = content.range(of: "]", options: String.CompareOptions.backwards, range: nil, locale: nil)
+            var info = IPAInfo()
+            if start != nil && end != nil {
+                let branchTempSub = content[start?.lowerBound..<end?.upperBound]
+                let branchTemp = String(branchTempSub)
+                var branch = branchTemp?.replacingOccurrences(of: "[", with: "")
+                branch = branch?.replacingOccurrences(of: "]", with: "")
+                info.branch = branch
+                content = content.replacingOccurrences(of: "_\(branchTemp!)", with: "")
+            }
             let items = content.components(separatedBy: "_")
             guard items.count == 4 else {
                 continue
             }
-            var info = IPAInfo()
+            
             info.name = items[0]
             info.enverment = items[1]
             guard info.enverment == "Debug" || info.enverment == "Release" else {
@@ -267,4 +281,5 @@ struct IPAInfo {
     var build:Int = 0
     var ipaName:String = ""
     var time:String = ""
+    var branch:String?
 }
