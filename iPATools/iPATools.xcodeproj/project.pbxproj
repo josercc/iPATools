@@ -107,6 +107,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 5DAA3CC81F4E82C500FD61C7;
@@ -227,7 +228,7 @@
 			buildSettings = {
 				DEVELOPMENT_TEAM = UL78A6B4GH;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -236,7 +237,7 @@
 			buildSettings = {
 				DEVELOPMENT_TEAM = UL78A6B4GH;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -259,6 +260,7 @@
 				5DAA3CDA1F4E82C500FD61C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
