@@ -145,7 +145,7 @@ struct iPAManager {
             if let config = findConfig(build: "\(ipa.build)") {
                 sourceList["sha1"] = config["sha1"] as? String
                 if let list = config["更新记录"] as? [String] {
-                    var changeLog = list.joined(separator: "\n")
+                    let changeLog = list.joined(separator: "\n")
                     sourceList["changelog"] = changeLog
                 }
                 

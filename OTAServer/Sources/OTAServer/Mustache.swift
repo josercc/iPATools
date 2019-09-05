@@ -14,6 +14,7 @@ let BranchTemplate = """
         <meta charset="utf-8">
         <title></title>
         <link rel="stylesheet" href="//res.wx.qq.com/open/libs/weui/1.1.3/weui.min.css" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     </head>
     <body>
         <a href="/" class="weui-btn weui-btn_primary style="width: 95%;">回到首页</a>
@@ -40,6 +41,7 @@ let VersionTemplate = """
         <meta charset="utf-8">
         <title></title>
         <link rel="stylesheet" href="//res.wx.qq.com/open/libs/weui/1.1.3/weui.min.css" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     </head>
     <body>
         <a href="/" class="weui-btn weui-btn_primary style="width: 95%;">回到首页</a>
@@ -67,6 +69,7 @@ let EvenmentTemplate = """
         <meta charset="utf-8">
         <title></title>
         <link rel="stylesheet" href="//res.wx.qq.com/open/libs/weui/1.1.3/weui.min.css" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     </head>
     <body>
         <a href="/" class="weui-btn weui-btn_primary style="width: 95%;">回到首页</a>
@@ -92,12 +95,7 @@ let DetailTemplate = """
         <meta charset="utf-8">
         <title></title>
         <link rel="stylesheet" href="//res.wx.qq.com/open/libs/weui/1.1.3/weui.min.css" />
-        <style>
-            html,
-            body {
-                height: 100%;
-            }
-        </style>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     </head>
     <body>
         <a href="/" class="weui-btn weui-btn_primary style="width: 95%;">回到首页</a>
