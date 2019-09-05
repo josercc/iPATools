@@ -133,8 +133,9 @@ let DetailTemplate = """
                             <p class="weui-media-box__desc">{{sha1}}</p>
                         </div>
                         <div class="weui-media-box weui-media-box_text">
-                            <h4 class="weui-media-box__title">更新记录</h4>
-                            <p class="weui-media-box__desc">{{changelog}}</p>
+                            <h3>更新记录</h3>
+                            <br>
+                            <p>{{changelog}}</p>
                         </div>
                     </div>
                     
